@@ -17,3 +17,4 @@ makepopup() {
   fi
 }
 alias vpn='sudo openconnect --authgroup COMP_SCI_SPLIT dept-ra-cssc.vpn.wisc.edu'
+

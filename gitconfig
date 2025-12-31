@@ -18,3 +18,5 @@
 	# no color version
 	lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
 
+[pull]
+	rebase = true

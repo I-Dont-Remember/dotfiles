@@ -14,13 +14,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Go
-export GOENV_ROOT="$HOME/.goenv"
-export PATH="$GOENV_ROOT/bin:$PATH"
-eval "$(goenv init -)"
-export PATH="$GOROOT/bin:$PATH"
-export PATH="$PATH:$GOPATH/bin"
-
 # Python
 # If you run into module errors, it means you don't have all dependencies for that Python version
 # Check the pyenv wiki for suggested packages
@@ -42,6 +35,8 @@ export NVM_DIR="$HOME/.nvm"
 export FLYCTL_INSTALL="$(dirname ~/)/$(basename ~/)/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
+# Setup for Mise-en-place instead of all the Pyenv,Goenv, etc. language-specific tools
+eval "$(mise activate bash)"
 
 # Add any extra stuff that's only for WSL linux
 if [ -z ${WSL_DISTRO_NAME+x} ]; then

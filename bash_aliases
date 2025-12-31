@@ -191,7 +191,7 @@ featurebranch() {
 
 # Happybara
 # deprecations - pain in my ass https://www.serverless.com/framework/docs/deprecations/#CLI_OPTIONS_BEFORE_COMMAND
-alias sls='node ~/work/happybara-io/happybara-central/node_modules/serverless/bin/serverless.js'
+alias sls='node ./node_modules/serverless/bin/serverless.js'
 sls_dev() {
     echo "DEV args:" "$@"
     sls "$@" --aws-profile 'happybara-dev'
@@ -220,3 +220,7 @@ alias gstart='gco main && git pull'
 # had to install ntpdate tool for this, but it seems effective for now
 alias windows_wsl_clock_out_of_sync='sudo ntpdate time.windows.com'  # old way, not reliable fix 'sudo hwclock -s'
 
+ts2d() {
+    local timestamp=$1
+    echo "$(date -d "@$timestamp" "+%Y-%m-%d %H:%M:%S")"
+}
