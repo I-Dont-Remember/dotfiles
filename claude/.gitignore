@@ -1,0 +1,16 @@
+# Runtime files — do not track
+history.jsonl
+.credentials.json
+mcp-needs-auth-cache.json
+
+# Directories managed by Claude Code at runtime
+cache/
+downloads/
+ide/
+plans/
+plugins/
+projects/
+session-env/
+shell-snapshots/
+backups/
+file-history/

@@ -194,6 +194,11 @@ install-python() {
     ilog "Python"
     # install pyenv
     # install latest python versions
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+}
+
+install-mise() {
+    curl https://mise.run | sh
 }
 
 # @user
@@ -242,7 +247,7 @@ install-zaproxy() {
 
 # @root
 install-dev-packages() {
-    #   shellcheck - to make us not suck at Bash -  in future look into https://github.com/mvdan/sh formatters
+    #   sc (shellcheck) - linter to help write better Bash - in future look into https://github.com/mvdan/sh formatters
     #   grip - markdown preview
     #   httpie - better than curl
     #   autojump - quickly move around command line
@@ -253,6 +258,7 @@ install-dev-packages() {
     ilog "Dev packages"
     # TODO: set these up as arrays, so we can run tests against it easily?  a simple command -v would suffice
     $ai shellcheck \
+        bats \
         grip \
         vim \
         git \

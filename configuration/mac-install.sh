@@ -63,6 +63,8 @@ function main() {
     bi "git"
     bi "vim"
     bi "bash-completion"
+    bi "bats-core"
+    bi "shellcheck"
     bi "httpie"
     bi "cowsay"
     bi "wget"

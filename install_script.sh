@@ -75,7 +75,7 @@ is_int() {
 mock=0
 dir=~/dotfiles
 olddir=~/old_dotfiles
-ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link-dotfiles.sh spinners.sh"
+ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link_dotfiles.sh spinners.sh agent-docs tests Makefile CLAUDE.md claude ublock-origin-filters.txt"
 
 echo "__________________________________________"
 echo "Running install script for Kevin's dotfiles!"
@@ -118,6 +118,8 @@ if [ "$mock" -eq "1" ]; then
         scriptname=$(basename $script)
         echo "-> (placeholder) creating symlink for $scriptname"
     done
+
+    echo "-> (placeholder) create symlink for .claude/settings.json"
 echo "...done"
 exit 0
 fi
@@ -154,5 +156,15 @@ mkdir ~/bin || true
 
 # Link scripts
 ln -s ~/dotfiles/scripts/gitcheck.sh ~/bin/gitcheck
+
+# Claude Code settings
+echo "Setting up Claude Code settings..."
+mkdir -p ~/.claude
+if [[ -e ~/.claude/settings.json && ! -L ~/.claude/settings.json ]]; then
+    echo "-> backing up existing ~/.claude/settings.json"
+    mv ~/.claude/settings.json "$olddir/claude-settings.json"
+fi
+ln -sf "$dir/claude/settings.json" ~/.claude/settings.json
+echo "-> symlinked ~/.claude/settings.json"
 
 echo "...done"
