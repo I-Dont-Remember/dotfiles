@@ -38,6 +38,9 @@ export PATH="$FLYCTL_INSTALL/bin:$PATH"
 # Setup for Mise-en-place instead of all the Pyenv,Goenv, etc. language-specific tools
 eval "$(mise activate bash)"
 
+# Go
+export GOTOOLCHAIN=local # avoid frustration when 'auto' and it automatically installs newer language versions without consent. I want to manage those explicitly
+
 # Add any extra stuff that's only for WSL linux
 if [ -z ${WSL_DISTRO_NAME+x} ]; then
   echo "non-wsl linux variant"
