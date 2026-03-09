@@ -6,13 +6,3 @@ Host server
 	HostName server.local
 	User kevin
 
-Host cae
-    ForwardX11 yes
-    HostName best-tux.cae.wisc.edu
-    user kpquinn
-
-Host cs
-    HostName best-linux.cs.wisc.edu
-    user kquinn
-
-
