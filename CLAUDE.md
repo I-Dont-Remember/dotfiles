@@ -23,3 +23,4 @@ When making changes that aren't markdown files, follow this process:
 
 - I care about simplicity and ease of maintenance, I don't like adding too much complexity because I want to make it easy to choose.
 - The testing setup in this repo before I brought Claude into the mix (March 2026) started off very brittle and likely not idempotent. It could use some work at some point.
+- An ongoing debt-first refactor is in progress — see `agent-docs/refactor-plan.md` for the tracked checklist.
