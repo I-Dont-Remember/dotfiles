@@ -71,7 +71,6 @@ is_int() {
 ##############################
 
 # Possible additions https://github.com/adamatan/bash-boilerplate/blob/master/boilerplate.sh
-# TODO: update this script for idempotency
 mock=0
 dir=~/dotfiles
 olddir=~/old_dotfiles
@@ -89,73 +88,97 @@ if [ "$#" -eq 0 ]; then
 fi
 
 echo "Changing to $dir.."
-cd $dir || exit 5
+cd "$dir" || exit 5
 
 if [ "$mock" -eq "1" ]; then
     echo "Moving any existing files in $HOME to $olddir.."
-    for entry in $dir/*; do
-        fname=$(basename $entry)
+    for entry in "$dir"/*; do
+        fname=$(basename "$entry")
 
         if in_list "$ignorefiles" "$fname"; then
             echo "-> ignored $fname"
             continue
         fi
-        if [[ -e ~/.$fname ]]; then
+        if [ -L "$HOME/.$fname" ] && [ "$(readlink "$HOME/.$fname")" = "$entry" ]; then
+            echo "-> already linked: .$fname (skipping)"
+            continue
+        fi
+        if [[ -e "$HOME/.$fname" ]]; then
             echo "-> moving .$fname"
         fi
         if [[ $fname == "ssh-config" ]]; then
             echo "Creating symlink for .ssh/config"
-            mkdir ~/.ssh/ 2> /dev/null || true
         else
             echo "-> create symlink for $fname"
         fi
     done
 
     echo "Creating ${HOME}/bin..."
-    mkdir ~/bin 2> /dev/null || true
 
-    for script in $dir/scripts/*; do
-        scriptname=$(basename $script)
+    for script in "$dir"/scripts/*; do
+        scriptname=$(basename "$script")
         echo "-> (placeholder) creating symlink for $scriptname"
     done
 
     echo "-> (placeholder) create symlink for .claude/settings.json"
-echo "...done"
-exit 0
+    echo "...done"
+    exit 0
 fi
 
 ########################################
 # Real script
 ########################################
 echo "Moving any existing files in ~ to $olddir.."
-for entry in $dir/*; do
+mkdir -p "$olddir"
+
+for entry in "$dir"/*; do
     fname=$(basename "$entry")
 
     if in_list "$ignorefiles" "$fname"; then
         echo "-> ignored $fname"
         continue
     fi
-    if [[ -e ~/.$fname ]]; then
-        echo "-> moving .$fname"
-        mv ~/."$fname" $olddir
-    fi
 
     if [[ $fname == "ssh-config" ]]; then
+        mkdir -p "$HOME/.ssh"
+        target="$HOME/.ssh/config"
+        source="$entry"
+
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+            echo "-> already linked: .ssh/config (skipping)"
+            continue
+        fi
+
         echo "Creating symlink for .ssh/config"
-        mkdir ~/.ssh/ || true
-        mv ~/.ssh/config $olddir
-        ln -s ssh-config ~/.ssh/config
+        if [[ -e "$target" && ! -L "$target" ]]; then
+            mv "$target" "$olddir/ssh-config"
+        fi
+        ln -sf "$source" "$target"
     else
+        target="$HOME/.$fname"
+        source="$entry"
+
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+            echo "-> already linked: .$fname (skipping)"
+            continue
+        fi
+
+        if [[ -e "$target" ]]; then
+            echo "-> moving .$fname"
+            mv "$target" "$olddir"
+        fi
         echo "-> create symlink for $fname"
-        ln -s "$entry" "$HOME/.$fname"
-fi
+        ln -s "$source" "$target"
+    fi
 done
 
 echo "Creating ${HOME}/bin..."
-mkdir ~/bin || true
+mkdir -p ~/bin
 
 # Link scripts
-ln -s ~/dotfiles/scripts/gitcheck.sh ~/bin/gitcheck
+if [ ! -L ~/bin/gitcheck ] || [ "$(readlink ~/bin/gitcheck)" != "$dir/scripts/gitcheck.sh" ]; then
+    ln -sf "$dir/scripts/gitcheck.sh" ~/bin/gitcheck
+fi
 
 # Claude Code settings
 echo "Setting up Claude Code settings..."
@@ -164,7 +187,11 @@ if [[ -e ~/.claude/settings.json && ! -L ~/.claude/settings.json ]]; then
     echo "-> backing up existing ~/.claude/settings.json"
     mv ~/.claude/settings.json "$olddir/claude-settings.json"
 fi
-ln -sf "$dir/claude/settings.json" ~/.claude/settings.json
-echo "-> symlinked ~/.claude/settings.json"
+if [ ! -L ~/.claude/settings.json ] || [ "$(readlink ~/.claude/settings.json)" != "$dir/claude/settings.json" ]; then
+    ln -sf "$dir/claude/settings.json" ~/.claude/settings.json
+    echo "-> symlinked ~/.claude/settings.json"
+else
+    echo "-> already linked: .claude/settings.json (skipping)"
+fi
 
 echo "...done"

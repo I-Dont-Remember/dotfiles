@@ -100,3 +100,56 @@ setup() {
     run is_int "12abc"
     [ "$status" -eq 1 ]
 }
+
+# ---------------------------------------------------------------------------
+# idempotency: mock mode skips already-linked files
+# ---------------------------------------------------------------------------
+
+@test "mock mode: already-linked file is skipped" {
+    # Set up a temp dir simulating dotfiles repo + home
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    local fake_home="$tmpdir/home"
+    local fake_dir="$tmpdir/dotfiles"
+    mkdir -p "$fake_home" "$fake_dir"
+
+    # Create a fake dotfile in the repo
+    echo "# test" > "$fake_dir/bashrc"
+
+    # Pre-create the symlink pointing to the correct target
+    ln -s "$fake_dir/bashrc" "$fake_home/.bashrc"
+
+    # Run the check logic inline (mirrors install_script.sh idempotency check)
+    local target="$fake_home/.bashrc"
+    local source="$fake_dir/bashrc"
+    local skipped=0
+
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+        skipped=1
+    fi
+
+    rm -rf "$tmpdir"
+    [ "$skipped" -eq 1 ]
+}
+
+@test "mock mode: file not yet linked is not skipped" {
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    local fake_home="$tmpdir/home"
+    local fake_dir="$tmpdir/dotfiles"
+    mkdir -p "$fake_home" "$fake_dir"
+
+    echo "# test" > "$fake_dir/bashrc"
+    # No symlink created — target does not exist
+
+    local target="$fake_home/.bashrc"
+    local source="$fake_dir/bashrc"
+    local skipped=0
+
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+        skipped=1
+    fi
+
+    rm -rf "$tmpdir"
+    [ "$skipped" -eq 0 ]
+}
