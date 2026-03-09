@@ -26,7 +26,7 @@ Each item is independently actionable.
 
 - **Adopt Starship prompt**: The hand-rolled PS1 in `bashrc` is complex and hard to maintain. Starship (`starship.rs`) is cross-shell, fast, and highly configurable. A `starship.toml` could be tracked in dotfiles.
 - **Add `fzf` integration**: `fzf` for fuzzy history search (`Ctrl+R`), file finding, and `cd` navigation would be a significant quality-of-life improvement. Config/keybindings should be tracked.
-- **Clean up shell startup output**: Remove all the `echo "using bashrc"` / `echo "Running .profile"` debug prints for a clean terminal open experience.
+- ~~**Clean up shell startup output**: Remove all the `echo "using bashrc"` / `echo "Running .profile"` debug prints for a clean terminal open experience.~~ **DONE** (March 2026 refactor)
 
 ---
 
@@ -49,7 +49,7 @@ Add the following tools to `install-dev-packages` / `mac-install.sh` and documen
 
 - **Add `mise.toml` (global config)**: Track a `~/.config/mise/config.toml` (or global `mise.toml`) in dotfiles to pin global tool versions (e.g., default Python, Node, Go versions). This replaces the fragmented pyenv/nvm/goenv history.
 - **Mac install script should use Mise**: Currently `mac-install.sh` uses pyenv. Should align with the Linux setup and delegate language version management to Mise.
-- **Remove pyenv from `bashrc_linux`**: Mise has replaced it; pyenv config is dead weight.
+- ~~**Remove pyenv from `bashrc_linux`**: Mise has replaced it; pyenv config is dead weight.~~ **DONE**
 
 ---
 
@@ -61,7 +61,7 @@ Add the following tools to `install-dev-packages` / `mac-install.sh` and documen
 
 ## Symlink / Install Script
 
-- **Consolidate `install_script.sh` and `link_dotfiles.sh`**: There are two scripts doing overlapping jobs. Consolidate into one clean, idempotent script with a `--dry-run` flag.
+- ~~**Consolidate `install_script.sh` and `link_dotfiles.sh`**: There are two scripts doing overlapping jobs. Consolidate into one clean, idempotent script with a `--dry-run` flag.~~ **DONE** (`link_dotfiles.sh` deleted, `install_script.sh` made idempotent)
 - **Add `CLAUDE.md` files to ignore list**: `install_script.sh`'s `ignorefiles` list should include `CLAUDE.md` and `agent-docs/` so they don't get symlinked into `$HOME`.
 - **Track newly added files automatically**: Consider a manifest-style list of which files get symlinked, rather than a blocklist — it's easier to reason about as the repo grows.
 

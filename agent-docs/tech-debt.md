@@ -7,13 +7,13 @@ Each item is independently actionable — agents can be given a single item to f
 
 ## `install_script.sh`
 
-- **Not idempotent**: Re-running the script overwrites symlinks and moves existing dotfiles to `$olddir` repeatedly. TODOed in the file itself. `$olddir` (`~/old_dotfiles`) is also never created before `mv` attempts to use it, which will cause failures.
-- **Unquoted variables in mock loop**: `for entry in $dir/*` and `fname=$(basename $entry)` are unquoted, breaking on paths with spaces.
-- **SSH symlink uses relative path**: `ln -s ssh-config ~/.ssh/config` (line 145) uses a bare filename, not the absolute path `$entry`. This will create a broken symlink unless CWD happens to be `$dir`.
+- ~~**Not idempotent**: Re-running the script overwrites symlinks and moves existing dotfiles to `$olddir` repeatedly. TODOed in the file itself. `$olddir` (`~/old_dotfiles`) is also never created before `mv` attempts to use it, which will cause failures.~~ **RESOLVED** (March 2026 refactor)
+- ~~**Unquoted variables in mock loop**: `for entry in $dir/*` and `fname=$(basename $entry)` are unquoted, breaking on paths with spaces.~~ **RESOLVED**
+- ~~**SSH symlink uses relative path**: `ln -s ssh-config ~/.ssh/config` uses a bare filename, not the absolute path `$entry`. This will create a broken symlink unless CWD happens to be `$dir`.~~ **RESOLVED**
 - **Only links `gitcheck.sh`** from `scripts/`: `eye_saver.sh` and `disk-usage` are not linked.
 - **Duplicate logic between mock/real modes**: The mock and real loops are nearly identical copy-paste; could be DRYed with a `--dry-run` flag pattern.
-- **`link_dotfiles.sh` references non-existent files**: `bashrc_linux`, `bash_aliases`, `bash_aliases_linux`, `bash_aliases_macos` are all referenced but don't exist in the repo. The actual file is `bashrc_linux_wsl`. This script is probably broken.
-- **Two competing symlink scripts**: `install_script.sh` and `link_dotfiles.sh` both handle symlinking with inconsistent and overlapping behavior.
+- ~~**`link_dotfiles.sh` references non-existent files**: deleted.~~ **RESOLVED**
+- ~~**Two competing symlink scripts**: `install_script.sh` and `link_dotfiles.sh` both handle symlinking.~~ **RESOLVED** (`link_dotfiles.sh` deleted)
 
 ---
 
@@ -42,9 +42,8 @@ Each item is independently actionable — agents can be given a single item to f
 
 ## `configuration/Makefile`
 
-- **Typo in variable name**: `post-instal-tasks.sh` (missing second 'l') on line 8 — will cause the referenced file to never be found.
-- **`test-full` runs `post-install-tasks` outside Docker**: `&& /bin/bash ${post-install-tasks}` runs locally, not in the container, probably unintentionally.
-- **Inconsistent indentation**: `shell:` and `test-single:` targets use spaces; `build:` and `test-full:` use tabs. Make requires tabs.
+- ~~**Typo in variable name**: `post-instal-tasks.sh` (missing second 'l') — already removed from file.~~ **RESOLVED** (pre-existing)
+- ~~**Inconsistent indentation**: All targets already use tabs.~~ **NOT AN ISSUE**
 
 ---
 
@@ -61,36 +60,36 @@ Each item is independently actionable — agents can be given a single item to f
 
 ## `bashrc`
 
-- **`~/.local/bin` added to PATH twice**: Lines 15 and 125 both add it, causing duplicate PATH entries.
-- **Poetry PATH exported** (`$HOME/.poetry/bin`): Poetry has been superseded by uv/mise in current setup. This is stale.
-- **NVM loaded at bottom of `bashrc`** (lines 175-177) AND also in `bashrc_linux` (lines 30-32): Duplicate loading on Linux.
-- **Interactive-only guard (`case $- in *i*`) is placed near the bottom** (line 164) instead of near the top — PATH exports and other setup above it run for non-interactive shells unnecessarily.
-- **Debug `echo "using bashrc"` at top**: Noisy, prints on every shell open.
+- ~~**`~/.local/bin` added to PATH twice**~~ **RESOLVED** (duplicate removed)
+- ~~**Poetry PATH exported**~~ **RESOLVED** (removed)
+- ~~**NVM loaded at bottom of `bashrc`** AND also in `bashrc_linux`: Duplicate loading on Linux.~~ **RESOLVED** (NVM removed from bashrc, kept in bashrc_linux)
+- ~~**Interactive-only guard placed near the bottom** instead of near the top.~~ **RESOLVED** (guard moved to after PATH/env setup, before interactive-only sections)
+- ~~**Debug `echo "using bashrc"` at top**~~ **RESOLVED** (removed)
 
 ---
 
 ## `bashrc_linux`
 
-- **Pyenv still configured** even though Mise has been adopted: `PYENV_ROOT`, `pyenv init` calls, and the `echo "pyenv init going.."` debug message are all still present. If pyenv isn't installed, this silently no-ops but is confusing.
-- **NVM duplicated** from `bashrc` — loads twice on Linux.
-- **`FLYCTL_INSTALL` path construction is overly complex**: `$(dirname ~/)/$(basename ~/)` is just `$HOME`. Should be `export FLYCTL_INSTALL="$HOME/.fly"`.
-- **MSSQL tools PATH** (`/opt/mssql-tools18/bin`) added unconditionally: Very machine-specific, should guard with `[ -d ... ]`.
-- **Multiple debug echo statements**: `echo "Using Linux bashrc extras..."`, `echo "non-wsl linux variant"`, `echo "Adding any WSL-specific Linux things..."` — noisy.
+- ~~**Pyenv still configured** even though Mise has been adopted.~~ **RESOLVED** (pyenv block removed)
+- ~~**NVM duplicated** from `bashrc` — loads twice on Linux.~~ **RESOLVED** (removed from bashrc)
+- **`FLYCTL_INSTALL` path construction is overly complex**: `$(dirname ~/)/$(basename ~/)` simplified to `$HOME/.fly`. **RESOLVED**
+- ~~**MSSQL tools PATH** added unconditionally: Very machine-specific.~~ **RESOLVED** (guarded with `[ -d ... ]`)
+- ~~**Multiple debug echo statements**~~ **RESOLVED** (all removed)
 
 ---
 
 ## `profile`
 
-- **Stale PATH entries**: GOPATH/GOBIN, Android SDK (`$ANDROID_HOME`), Yarn global bin, and Poetry are all exported. Most of these are now managed by Mise or not used. Android paths in particular are almost certainly irrelevant.
-- **Debug `echo "Running .profile"`**: Prints on every login shell.
-- **Duplicates with `bashrc`**: PATH manipulation in both `profile` and `bashrc` creates ordering confusion.
+- ~~**Stale PATH entries**: GOPATH/GOBIN, Android SDK, Yarn global bin, and Poetry are all exported.~~ **RESOLVED** (all removed)
+- ~~**Debug `echo "Running .profile"`**~~ **RESOLVED** (removed)
+- **Duplicates with `bashrc`**: PATH manipulation in both `profile` and `bashrc` creates ordering confusion. (Partially reduced — both still add `~/.local/bin`)
 
 ---
 
 ## `scripts/gitcheck.sh`
 
-- **Sources non-existent file**: `~/dotfiles/boilerplate/bash_functions.sh` is sourced on line 13, but `boilerplate/` does not exist in the repo. Script will fail to run.
-- **Hardcoded `master` branch**: `git log HEAD.."$remote"/master` — should handle `main` or detect the default branch dynamically.
+- ~~**Sources non-existent file**: `~/dotfiles/boilerplate/bash_functions.sh` is sourced but `boilerplate/` does not exist.~~ **RESOLVED** (source line removed)
+- ~~**Hardcoded `master` branch**: `git log HEAD.."$remote"/master` — should handle `main` or detect default branch dynamically.~~ **RESOLVED** (detects default branch via `git symbolic-ref`)
 - **`cowsay` as a hard runtime dependency**: The script ends with `cowsay " All Done! "`, making it fail if cowsay isn't installed.
 - **`greadlink` required on macOS**: Comment on line 101 admits this, but there's no install check or helpful error.
 
@@ -98,17 +97,17 @@ Each item is independently actionable — agents can be given a single item to f
 
 ## `ssh-config`
 
-- **Stale entries**: `cae` (UW-Madison CAE lab) and `cs` (UW-Madison CS lab) entries are presumably unused since graduation. `mrzero` (Raspberry Pi) and `server` are LAN-only hosts that may no longer exist.
+- ~~**Stale entries**: `cae` (UW-Madison CAE lab) and `cs` (UW-Madison CS lab) entries removed.~~ **RESOLVED**
 - **No identity file or security config**: No `IdentityFile`, `ServerAliveInterval`, or other common hardening options are configured.
 
 ---
 
 ## Repo Structure
 
-- **`agent-docs/` referenced in CLAUDE.md but didn't exist**: Now created (this file lives there).
+- ~~**`scripts_deprecated/` still exists**~~ **RESOLVED** (deleted)
+- ~~**`log4bash.sh` and `spinners.sh` at repo root**: vendored utility scripts, unreferenced.~~ **RESOLVED** (deleted)
+- ~~**`link_dotfiles.sh`**: broken and superseded.~~ **RESOLVED** (deleted)
 - **`.gitmodules` is effectively empty**: One line stub, probably a leftover from when `log4bash` was a submodule.
-- **`log4bash.sh` and `spinners.sh` at repo root**: Appear to be vendored utility scripts. Not referenced anywhere currently visible (gitcheck.sh references log4bash but via a non-existent submodule path). Either properly integrate or remove.
-- **`scripts_deprecated/` still exists**: README is written in raw HTML (not Markdown). Scripts are clearly unused. Should probably just be deleted or archived in a git note.
-- **`boilerplate/` directory referenced but absent**: `gitcheck.sh` sources from it, but it doesn't exist.
+- **`boilerplate/` directory referenced but absent**: `gitcheck.sh` sourced from it — now fixed, but the directory is still absent (expected).
 - **`configuration/README.md` references `post-install.sh`** in its usage section, but no such file exists in the repo.
 - **`scripts/disk-usage`** has no extension and its contents haven't been checked for correctness.
