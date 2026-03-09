@@ -165,6 +165,16 @@ esac
 
 ####################
 #
+# Modern tools
+#
+####################
+
+# fzf — fuzzy finder shell integration (keybindings + completion)
+# Requires fzf >= 0.48; no-op if not installed
+command -v fzf &>/dev/null && eval "$(fzf --bash)"
+
+####################
+#
 # Fin
 #
 ####################

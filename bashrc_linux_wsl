@@ -1,5 +1,17 @@
-echo "Using WSL extras"
+# WSL-specific shell configuration
+# Loaded by bashrc_linux when running under Windows Subsystem for Linux
 
-# for using with wslutilities https://github.com/wslutilities/wslu
+# Open URLs with the Windows browser via wslutilities (https://github.com/wslutilities/wslu)
 export BROWSER=wslview
-# can now run xdg-open https://google.com | file.txt | etc. interesting stuff
+
+# Windows user home directory
+WIN_HOME="/mnt/c/Users/$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')"
+
+# Clipboard interop
+alias pbcopy='clip.exe'
+alias pbpaste='powershell.exe -command "Get-Clipboard"'
+
+# Open Windows Explorer
+alias open='explorer.exe'
+
+# WSLg note: GUI apps work natively in WSL2 with kernel >= 5.15 — no DISPLAY export needed

@@ -224,3 +224,20 @@ ts2d() {
     local timestamp=$1
     echo "$(date -d "@$timestamp" "+%Y-%m-%d %H:%M:%S")"
 }
+
+#==========================================================
+# Modern CLI tools — guarded aliases (no-op if not installed)
+#==========================================================
+# bat: better cat with syntax highlighting
+command -v bat &>/dev/null && alias cat='bat --paging=never'
+
+# eza: better ls with icons/colors (overrides plain ls aliases above when installed)
+if command -v eza &>/dev/null; then
+    alias ls='eza --icons=auto'
+    alias ll='eza -lah --icons=auto'
+fi
+
+# zoxide: smarter cd (learns frequent directories)
+command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+
+# rg, fd, delta, jq — used directly by name, no alias needed

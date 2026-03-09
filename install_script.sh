@@ -74,7 +74,7 @@ is_int() {
 mock=0
 dir=~/dotfiles
 olddir=~/old_dotfiles
-ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link_dotfiles.sh spinners.sh agent-docs tests Makefile CLAUDE.md claude ublock-origin-filters.txt"
+ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link_dotfiles.sh spinners.sh agent-docs tests Makefile CLAUDE.md claude ublock-origin-filters.txt mise.toml gitignore_global"
 
 echo "__________________________________________"
 echo "Running install script for Kevin's dotfiles!"
@@ -121,6 +121,9 @@ if [ "$mock" -eq "1" ]; then
     done
 
     echo "-> (placeholder) create symlink for .claude/settings.json"
+    echo "-> (placeholder) create symlink for .config/mise/config.toml"
+    echo "-> (placeholder) create symlink for .gitignore_global"
+    echo "-> (placeholder) create symlink for ~/bin/check-tools"
     echo "...done"
     exit 0
 fi
@@ -192,6 +195,41 @@ if [ ! -L ~/.claude/settings.json ] || [ "$(readlink ~/.claude/settings.json)" !
     echo "-> symlinked ~/.claude/settings.json"
 else
     echo "-> already linked: .claude/settings.json (skipping)"
+fi
+
+# mise global config
+echo "Setting up mise global config..."
+mkdir -p ~/.config/mise
+mise_target="$HOME/.config/mise/config.toml"
+mise_source="$dir/mise.toml"
+if [ -L "$mise_target" ] && [ "$(readlink "$mise_target")" = "$mise_source" ]; then
+    echo "-> already linked: .config/mise/config.toml (skipping)"
+else
+    if [[ -e "$mise_target" && ! -L "$mise_target" ]]; then
+        mv "$mise_target" "$olddir/mise-config.toml"
+    fi
+    ln -sf "$mise_source" "$mise_target"
+    echo "-> symlinked ~/.config/mise/config.toml"
+fi
+
+# global gitignore
+echo "Setting up gitignore_global..."
+gi_target="$HOME/.gitignore_global"
+gi_source="$dir/gitignore_global"
+if [ -L "$gi_target" ] && [ "$(readlink "$gi_target")" = "$gi_source" ]; then
+    echo "-> already linked: .gitignore_global (skipping)"
+else
+    if [[ -e "$gi_target" && ! -L "$gi_target" ]]; then
+        mv "$gi_target" "$olddir/gitignore_global"
+    fi
+    ln -sf "$gi_source" "$gi_target"
+    echo "-> symlinked ~/.gitignore_global"
+fi
+
+# check-tools script
+if [ ! -L ~/bin/check-tools ] || [ "$(readlink ~/bin/check-tools)" != "$dir/scripts/check-tools.sh" ]; then
+    ln -sf "$dir/scripts/check-tools.sh" ~/bin/check-tools
+    echo "-> symlinked ~/bin/check-tools"
 fi
 
 echo "...done"

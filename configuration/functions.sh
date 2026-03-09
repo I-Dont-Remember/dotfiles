@@ -201,6 +201,40 @@ install-mise() {
     curl https://mise.run | sh
 }
 
+# Install modern CLI tool replacements (bat, eza, fd, ripgrep, delta, zoxide, jq, fzf)
+# On Linux: uses apt where available, falls back to cargo/mise
+# On macOS: brew install bat eza fd ripgrep git-delta zoxide jq fzf
+install-modern-cli-tools() {
+    log "Installing modern CLI tools"
+    # apt-installable tools
+    $update
+    $ai \
+        bat \
+        fd-find \
+        ripgrep \
+        jq \
+        fzf \
+        zoxide
+
+    # eza: not in apt on older Ubuntu; install via cargo or mise
+    if ! command -v eza &>/dev/null; then
+        if command -v cargo &>/dev/null; then
+            cargo install eza
+        else
+            log "eza not available via apt; install cargo or use: mise use --global eza"
+        fi
+    fi
+
+    # delta: git diff pager — install via cargo or download release
+    if ! command -v delta &>/dev/null; then
+        if command -v cargo &>/dev/null; then
+            cargo install git-delta
+        else
+            log "delta not available via apt; install cargo or download from https://github.com/dandavison/delta/releases"
+        fi
+    fi
+}
+
 # @user
 python-tools() {
     log "Finish Python setup"

@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+*.orig
+
+# Environment files
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+
+# IDEs
+.idea/
+.vscode/
+
+# Direnv
+.direnv/
+
+# Mise local overrides
+.mise.local.toml

@@ -2,7 +2,9 @@
 
 ## Context
 
-This repo has accumulated tech debt: broken scripts, stale tool paths, duplicated logic, and dead files. The goal is a **debt-first cleanup** — fix what's broken/stale, remove what's dead, consolidate duplicate logic, and leave the repo in a state that's simpler and easier to maintain. No new tools or enhancements in this pass.
+This repo has accumulated tech debt: broken scripts, stale tool paths, duplicated logic, and dead files. The goal of the **debt-first cleanup** was to fix what's broken/stale, remove what's dead, consolidate duplicate logic, and leave the repo in a state that's simpler and easier to maintain.
+
+**Status:** Refactor complete (all phases ✓). An **enhancement pass** was subsequently run in March 2026 — see `agent-docs/enhancements.md` for what was implemented (mise.toml, gitignore_global, gitconfig additions, modern CLI aliases, fzf integration, tmux.conf, WSL improvements, scripts/check-tools.sh).
 
 **User preferences confirmed:**
 - Scope: debt-first only (no Starship, fzf, bat, etc.)

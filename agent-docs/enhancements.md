@@ -17,37 +17,39 @@ Each item is independently actionable.
 
 ## Git Configuration
 
-- **Add `gitconfig` to dotfiles**: No global git config is tracked. Should include: name/email stubs (or placeholders), default branch name (`main`), preferred diff tool, useful aliases (e.g., `git lg` for pretty log), and `pull.rebase = true`.
-- **Add global `gitignore`**: A `gitignore_global` file for things like `.DS_Store`, `*.swp`, `.env`, `__pycache__/`, `.idea/`, `.vscode/` etc. should be tracked and configured via `core.excludesFile`.
+- ~~**Add `gitconfig` to dotfiles**~~: **DONE** (March 2026) — `gitconfig` now includes `[init] defaultBranch = main`, `[push] autoSetupRemote = true`, `[core] excludesFile = ~/.gitignore_global`, `[alias] lg`, and a commented delta block.
+- ~~**Add global `gitignore`**~~: **DONE** (March 2026) — `gitignore_global` created and wired into `gitconfig` and `install_script.sh`.
 
 ---
 
 ## Shell / Prompt Modernization
 
-- **Adopt Starship prompt**: The hand-rolled PS1 in `bashrc` is complex and hard to maintain. Starship (`starship.rs`) is cross-shell, fast, and highly configurable. A `starship.toml` could be tracked in dotfiles.
-- **Add `fzf` integration**: `fzf` for fuzzy history search (`Ctrl+R`), file finding, and `cd` navigation would be a significant quality-of-life improvement. Config/keybindings should be tracked.
+- **Adopt Starship prompt** *(future — groundwork below)*: The hand-rolled PS1 in `bashrc` is complex. Starship (`starship.rs`) is cross-shell and highly configurable.
+  - **To implement:** Create `starship.toml` in dotfiles root; add symlink to `~/.config/starship.toml` in `install_script.sh`; replace the PS1 block in `bashrc` with `eval "$(starship init bash)"`; install via `mise use --global starship` or `curl -sS https://starship.rs/install.sh | sh`.
+- ~~**Add `fzf` integration**~~: **DONE** (March 2026) — `bashrc` now runs `eval "$(fzf --bash)"` when fzf is present (Ctrl+R, Ctrl+T, Alt+C keybindings).
 - ~~**Clean up shell startup output**: Remove all the `echo "using bashrc"` / `echo "Running .profile"` debug prints for a clean terminal open experience.~~ **DONE** (March 2026 refactor)
 
 ---
 
 ## Modern CLI Tool Additions
 
-Add the following tools to `install-dev-packages` / `mac-install.sh` and document them:
+~~Add the following tools to `install-dev-packages` / `mac-install.sh` and document them:~~ **DONE** (March 2026) — `install-modern-cli-tools` function added to `configuration/functions.sh`; guarded aliases added to `bash_aliases`.
 
-- `bat` — better `cat` with syntax highlighting
-- `ripgrep` (`rg`) — better `grep`, already used by Claude Code
-- `fd` — better `find`
-- `eza` (or `lsd`) — better `ls` with icons/colors
-- `delta` — better git diff pager
-- `zoxide` — smarter `cd` (learns frequent directories)
-- `jq` — JSON processing (already likely used but not tracked)
-- `mise` — already adopted on Linux, should be in both Linux and Mac install scripts
+- `bat` — better `cat` with syntax highlighting ✓
+- `ripgrep` (`rg`) — better `grep`, already used by Claude Code ✓
+- `fd` — better `find` ✓
+- `eza` — better `ls` with icons/colors ✓
+- `delta` — better git diff pager ✓ (commented gitconfig block to opt in)
+- `zoxide` — smarter `cd` (learns frequent directories) ✓
+- `jq` — JSON processing ✓
+- `fzf` — fuzzy finder ✓
+- `mise` — already adopted on Linux, should be in both Linux and Mac install scripts ✓
 
 ---
 
 ## Mise / Language Management
 
-- **Add `mise.toml` (global config)**: Track a `~/.config/mise/config.toml` (or global `mise.toml`) in dotfiles to pin global tool versions (e.g., default Python, Node, Go versions). This replaces the fragmented pyenv/nvm/goenv history.
+- ~~**Add `mise.toml` (global config)**~~: **DONE** (March 2026) — `mise.toml` created at repo root, pinning Python 3.12, Node 22, Go 1.22. Symlinked to `~/.config/mise/config.toml` by `install_script.sh`.
 - **Mac install script should use Mise**: Currently `mac-install.sh` uses pyenv. Should align with the Linux setup and delegate language version management to Mise.
 - ~~**Remove pyenv from `bashrc_linux`**: Mise has replaced it; pyenv config is dead weight.~~ **DONE**
 
@@ -55,7 +57,7 @@ Add the following tools to `install-dev-packages` / `mac-install.sh` and documen
 
 ## Tmux Configuration
 
-- **Add `tmux.conf`**: No tmux configuration is tracked. A reasonable config should cover: prefix key rebind (e.g., `Ctrl+a`), mouse support, sane split keybindings, status bar config, and copy-mode behavior.
+- ~~**Add `tmux.conf`**~~: **DONE** (March 2026) — `tmux.conf` created with Ctrl+a prefix, mouse support, vi copy mode, visual split mnemonics (`|` / `-`), and a simple status bar.
 
 ---
 
@@ -70,8 +72,9 @@ Add the following tools to `install-dev-packages` / `mac-install.sh` and documen
 ## Configuration Script Modernization
 
 - **Update Dockerfile to Ubuntu 24.04 LTS**: Current base (20.04) is EOL. Upgrading would allow testing against a current environment.
-- **Fill in stub install functions**: `install-docker`, `install-node`, `install-go`, `install-python` (in functions.sh) are stubs. Docker and the language runtimes are core tools worth implementing properly, probably deferring to Mise for languages.
-- **Mac and Linux installs should install the same core dev tools**: There's no shared list. A shared config (e.g., a `tools.txt` or mise config) would make the two platforms consistent.
+- **Fill in stub install functions**: `install-docker`, `install-node`, `install-go`, `install-python` (in functions.sh) are stubs. Docker and the language runtimes are core tools worth implementing properly, probably deferring to Mise for languages. Note: `install-modern-cli-tools` was added in March 2026 as a working example of the pattern.
+- **Mac and Linux installs should install the same core dev tools**: There's no shared list. A shared config (e.g., a `tools.txt` or mise config) would make the two platforms consistent. `mise.toml` now serves as a partial shared manifest for language versions.
+- **Fix broken snap calls and apt-key deprecation**: `apt-key` is deprecated — should use `/etc/apt/keyrings/` approach. Snap calls may cause kernel panics (noted in functions.sh). Best addressed when setting up a new machine.
 
 ---
 
