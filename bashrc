@@ -1,18 +1,32 @@
-echo "using bashrc"
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
 #######################################################
 #
-# Configuration for all machines here
+# Environment — applies to all shells (interactive and non-interactive)
 #
 #######################################################
 # Add personal scripts directory
-export PATH=$HOME/bin:$PATH
-export PATH="$HOME/.poetry/bin:$PATH"
-# pipx tools
+export PATH="$HOME/bin:$PATH"
+# pipx tools and python user installs
 export PATH="$HOME/.local/bin:$PATH"
+
+# always use VIM so i never have to see Nanos stupid face
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
+# If not running interactively, don't do anything else
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+#######################################################
+#
+# Interactive-only configuration below
+#
+#######################################################
 
 ################
 # Prompt Stuff
@@ -121,20 +135,12 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# Access Python user libs, `python -m site --user-base` to find
-export PATH=~/.local/bin:$PATH
-
-# Setup section that divides based on OS
-# https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script
-
-# always use VIM so i never have to see Nanos stupid face
-export VISUAL=vim
-export EDITOR="$VISUAL"
 #######################################################
 #
 # Load OS specific files
 #
 #######################################################
+# https://stackoverflow.com/questions/394230/how-to-detect-the-os-from-a-bash-script
 case $OSTYPE in
     solaris*)
         echo "You have Solaris??"
@@ -157,21 +163,8 @@ case $OSTYPE in
     ;;
 esac
 
-
-
-
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-
 ####################
 #
 # Fin
 #
 ####################
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

@@ -8,8 +8,6 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-echo "Running .profile"
-
 # https://superuser.com/questions/183845/which-setup-files-should-be-used-for-setting-up-environment-variables-with-bash/183956
 
 # if running bash
@@ -25,19 +23,5 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH="$HOME/go"
-export GOBIN="$GOPATH/bin"
-
-# Add yarn global bin
-export PATH=$PATH:~/.yarn/bin
-
-# Android Studio junk
-export ANDROID_HOME=~/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-
 # user installs of python tools
-export PATH=~/.local/bin:$PATH
-
-
-export PATH="$HOME/.poetry/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
