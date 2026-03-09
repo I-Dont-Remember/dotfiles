@@ -10,9 +10,6 @@
 # To fix recurring ssh passphrase questions, use https://askubuntu.com/questions/362280/enter-ssh-passphrase-once
 # or similar, not an issue with the script
 
-. ~/dotfiles/boilerplate/bash_functions.sh
-#. ~/dotfiles/log4bash/log4bash.sh
-
 echo_blue() {
 	echo -en "\\033[0;36m"
 	echo "$1"
@@ -68,11 +65,13 @@ check_git_repo() {
 	git fetch --all &> /dev/null
 	remotes=($(git remote))
 	if [ ! -z "${remotes[*]}" ]; then
+		default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+		default_branch="${default_branch:-main}"
 		for remote in "${remotes[@]}"; do
-			echo_blue "----> Checking remote ${remote}/master..."
-			output=$(git log HEAD.."$remote"/master --oneline)
+			echo_blue "----> Checking remote ${remote}/${default_branch}..."
+			output=$(git log HEAD.."$remote"/"$default_branch" --oneline)
 			if [ "$output" != "" ]; then
-				log_warning "HEAD is behind ${remote}/master, need to pull"
+				log_warning "HEAD is behind ${remote}/${default_branch}, need to pull"
 				clean=1
 			fi
 		done
