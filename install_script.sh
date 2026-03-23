@@ -121,6 +121,7 @@ if [ "$mock" -eq "1" ]; then
     done
 
     echo "-> (placeholder) create symlink for .claude/settings.json"
+    echo "-> (placeholder) create symlink for .claude/CLAUDE.md"
     echo "-> (placeholder) create symlink for .config/mise/config.toml"
     echo "-> (placeholder) create symlink for .gitignore_global"
     echo "-> (placeholder) create symlink for ~/bin/check-tools"
@@ -195,6 +196,16 @@ if [ ! -L ~/.claude/settings.json ] || [ "$(readlink ~/.claude/settings.json)" !
     echo "-> symlinked ~/.claude/settings.json"
 else
     echo "-> already linked: .claude/settings.json (skipping)"
+fi
+if [[ -e ~/.claude/CLAUDE.md && ! -L ~/.claude/CLAUDE.md ]]; then
+    echo "-> backing up existing ~/.claude/CLAUDE.md"
+    mv ~/.claude/CLAUDE.md "$olddir/claude-CLAUDE.md"
+fi
+if [ ! -L ~/.claude/CLAUDE.md ] || [ "$(readlink ~/.claude/CLAUDE.md)" != "$dir/claude/CLAUDE.md" ]; then
+    ln -sf "$dir/claude/CLAUDE.md" ~/.claude/CLAUDE.md
+    echo "-> symlinked ~/.claude/CLAUDE.md"
+else
+    echo "-> already linked: .claude/CLAUDE.md (skipping)"
 fi
 
 # mise global config

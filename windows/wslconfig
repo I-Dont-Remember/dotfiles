@@ -1,0 +1,13 @@
+[wsl2]
+# This file should live at $home\.wslconfig
+memory=5GB
+# allow around half of 8 logical cpus
+processors=5
+swap=4GB
+
+[experimental]
+autoMemoryReclaim=gradual
+networkingMode=mirrored  # ports open in WSL reachable as localhost on Windows, VPN works; watch for port conflicts
+dnsTunneling=true        # correct DNS resolution with mirrored networking
+sparseVhd=true           # auto-compact virtual disk, minimal downside
+# firewall=false         # uncomment if Windows Firewall blocks WSL services
