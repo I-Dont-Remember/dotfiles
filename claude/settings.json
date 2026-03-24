@@ -1,11 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-
-  "model": "claude-sonnet-4-6",
-  "autoUpdatesChannel": "stable",
-
+  "cleanupPeriodDays": 30,
+  "includeGitInstructions": true,
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "Bash(git *)",
       "Bash(make *)",
@@ -21,12 +18,49 @@
       "Bash(head *)",
       "Bash(tail *)",
       "Bash(grep *)",
-      "Bash(wc *)"
-    ]
+      "Bash(wc *)",
+      "Bash(golangci-lint:*)",
+      "Bash(go get:*)",
+      "Bash(go build:*)",
+      "Bash(go run:*)",
+      "Bash(go test:*)",
+      "Bash(go fmt:*)",
+      "Bash(go vet:*)",
+      "Bash(go mod:*)",
+      "Bash(pre-commit:*)",
+      "Bash(make:*)",
+      "Bash(bats:*)",
+      "Bash(shellcheck:*)"
+    ],
+    "defaultMode": "acceptEdits"
   },
-
+  "model": "claude-sonnet-4-6",
+  "spinnerTipsEnabled": true,
+  "autoUpdatesChannel": "stable",
   "showTurnDuration": true,
-  "spinnerTipsEnabled": false,
-  "includeGitInstructions": true,
-  "cleanupPeriodDays": 30
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/bin/claude-notify"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/bin/claude-notify \"Task complete\" complete"
+          }
+        ]
+      }
+    ]
+  }
 }

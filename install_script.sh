@@ -74,7 +74,7 @@ is_int() {
 mock=0
 dir=~/dotfiles
 olddir=~/old_dotfiles
-ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link_dotfiles.sh spinners.sh agent-docs tests Makefile CLAUDE.md claude ublock-origin-filters.txt mise.toml gitignore_global"
+ignorefiles="README.md install_script.sh scripts scripts_deprecated log4bash.sh cheat-sheets configuration link_dotfiles.sh spinners.sh agent-docs tests Makefile CLAUDE.md claude mise ublock-origin-filters.txt gitignore_global"
 
 echo "__________________________________________"
 echo "Running install script for Kevin's dotfiles!"
@@ -125,6 +125,7 @@ if [ "$mock" -eq "1" ]; then
     echo "-> (placeholder) create symlink for .config/mise/config.toml"
     echo "-> (placeholder) create symlink for .gitignore_global"
     echo "-> (placeholder) create symlink for ~/bin/check-tools"
+    echo "-> (placeholder) create symlink for ~/bin/claude-notify"
     echo "...done"
     exit 0
 fi
@@ -212,7 +213,7 @@ fi
 echo "Setting up mise global config..."
 mkdir -p ~/.config/mise
 mise_target="$HOME/.config/mise/config.toml"
-mise_source="$dir/mise.toml"
+mise_source="$dir/mise/config.toml"
 if [ -L "$mise_target" ] && [ "$(readlink "$mise_target")" = "$mise_source" ]; then
     echo "-> already linked: .config/mise/config.toml (skipping)"
 else
@@ -241,6 +242,12 @@ fi
 if [ ! -L ~/bin/check-tools ] || [ "$(readlink ~/bin/check-tools)" != "$dir/scripts/check-tools.sh" ]; then
     ln -sf "$dir/scripts/check-tools.sh" ~/bin/check-tools
     echo "-> symlinked ~/bin/check-tools"
+fi
+
+# claude-notify script
+if [ ! -L ~/bin/claude-notify ] || [ "$(readlink ~/bin/claude-notify)" != "$dir/scripts/claude-notify.sh" ]; then
+    ln -sf "$dir/scripts/claude-notify.sh" ~/bin/claude-notify
+    echo "-> symlinked ~/bin/claude-notify"
 fi
 
 echo "...done"
