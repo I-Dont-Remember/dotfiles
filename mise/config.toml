@@ -1,0 +1,4 @@
+[tools]
+python = "3.12"
+node = "lts"
+# "npm:difit" = "latest" # this didn't seem to work, just installing `npm -g` on global Node

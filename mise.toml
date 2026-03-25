@@ -1,4 +1,0 @@
-[tools]
-python = "3.12"
-node = "25"
-go = "1.25"
