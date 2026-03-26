@@ -126,6 +126,7 @@ if [ "$mock" -eq "1" ]; then
     echo "-> (placeholder) create symlink for .gitignore_global"
     echo "-> (placeholder) create symlink for ~/bin/check-tools"
     echo "-> (placeholder) create symlink for ~/bin/claude-notify"
+    echo "-> (placeholder) create symlink for ~/bin/claude-statusline"
     echo "...done"
     exit 0
 fi
@@ -248,6 +249,12 @@ fi
 if [ ! -L ~/bin/claude-notify ] || [ "$(readlink ~/bin/claude-notify)" != "$dir/scripts/claude-notify.sh" ]; then
     ln -sf "$dir/scripts/claude-notify.sh" ~/bin/claude-notify
     echo "-> symlinked ~/bin/claude-notify"
+fi
+
+# claude-statusline script
+if [ ! -L ~/bin/claude-statusline ] || [ "$(readlink ~/bin/claude-statusline)" != "$dir/scripts/claude-statusline.sh" ]; then
+    ln -sf "$dir/scripts/claude-statusline.sh" ~/bin/claude-statusline
+    echo "-> symlinked ~/bin/claude-statusline"
 fi
 
 echo "...done"

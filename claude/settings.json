@@ -41,6 +41,10 @@
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/bin/claude-statusline"
+  },
   "hooks": {
     "Notification": [
       {
