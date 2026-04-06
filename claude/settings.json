@@ -45,6 +45,9 @@
     "type": "command",
     "command": "bash ~/bin/claude-statusline"
   },
+  "sandbox": {
+    "enabled": true
+  },
   "hooks": {
     "Notification": [
       {
