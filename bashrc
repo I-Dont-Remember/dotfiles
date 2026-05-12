@@ -173,8 +173,63 @@ esac
 # Requires fzf >= 0.48; no-op if not installed
 command -v fzf &>/dev/null && eval "$(fzf --bash)"
 
+# check for a saved Claude token to export
+check_expiry() {
+    # Example Usage:
+    # check_expiry "1/1/2025"
+    # Argument: Date in M/D/YYYY or MM/DD/YYYY format
+    local expiry_date="$1"
+    local warning_days=20
+
+    # Get current date and expiry date in seconds since epoch
+    # 'date -d' parses the string, '+%s' outputs seconds
+    local now_epoch=$(date +%s)
+    local exp_epoch=$(date -d "$expiry_date" +%s 2>/dev/null)
+
+    # Check if date parsing was successful
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Invalid date format. Please use M/D/YYYY."
+        return 1
+    fi
+
+    # Calculate difference in seconds
+    local diff_seconds=$((exp_epoch - now_epoch))
+    # Convert seconds to days ($60*60*24 = 86400$)
+    local diff_days=$((diff_seconds / 86400))
+
+    # Warning threshold
+    if [[ $diff_days -lt 0 ]]; then
+        echo "WARNING: $expiry_date has already expired ($((-diff_days)) days ago)."
+    elif [[ $diff_days -le $warning_days ]]; then
+        echo "WARNING: $expiry_date expires in less than $warning_days days ($diff_days days away)."
+    fi
+}
+
+load_claude_oauth_token() {
+    token_file="$HOME/.claude/oauth-token.txt"
+    if [ -f "$token_file" ]; then
+        expiry_date=$(awk 'NR==2 {print $2}' $token_file)
+        check_expiry $expiry_date
+        token=$(awk 'NR==1' $token_file)
+        current_date_in_same_format=$(date +%D)
+        export CLAUDE_CODE_OAUTH_TOKEN=$token
+    else
+        echo "WARN: no token file found for Claude Code!"
+    fi
+}
+load_claude_oauth_token
+
+
 ####################
 #
 # Fin
 #
 ####################
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/user/.lmstudio/bin"
+# End of LM Studio CLI section
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
